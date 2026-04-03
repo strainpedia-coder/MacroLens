@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Target, Activity, Scale, Trash2, RotateCcw, Save, ChevronRight } from 'lucide-react';
+import { User, Target, Activity, Scale, Trash2, RotateCcw, Save, Code } from 'lucide-react';
 import { useUser } from '../store/UserContext';
 import { useMeals } from '../store/MealContext';
 import { clearAllData } from '../utils/storage';
@@ -27,6 +27,10 @@ export default function Profile() {
   const { meals } = useMeals();
   const [editing, setEditing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  
+  // OpenAI Dev State
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('openai_api_key') || '');
+  const [keySaved, setKeySaved] = useState(false);
 
   const totalMeals = meals.length;
   const uniqueDays = new Set(meals.map(m => m.date)).size;
@@ -39,6 +43,16 @@ export default function Profile() {
   function handleReset() {
     clearAllData();
     window.location.reload();
+  }
+
+  function handleSaveKey() {
+    if (apiKey.trim()) {
+      localStorage.setItem('openai_api_key', apiKey.trim());
+    } else {
+      localStorage.removeItem('openai_api_key');
+    }
+    setKeySaved(true);
+    setTimeout(() => setKeySaved(false), 2000);
   }
 
   return (
@@ -212,6 +226,40 @@ export default function Profile() {
           <RotateCcw size={14} />
           Onboarding wiederholen
         </button>
+      </motion.div>
+
+      {/* Developer API Setup */}
+      <motion.div 
+        className="card mb-lg"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <h3 className="section-title">
+          <Code size={16} style={{ marginRight: 6 }} />
+          Entwickler & API
+        </h3>
+        <p className="profile-step-desc" style={{ fontSize: 'var(--font-xs)', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
+          Hinterlege hier deinen echten OpenAI API Key, um die intelligente Bilderkennung zu aktivieren. Dieser wird nur lokal gespeichert.
+        </p>
+        
+        <div className="input-group">
+          <input
+            type="password"
+            className="input-field"
+            value={apiKey}
+            onChange={e => setApiKey(e.target.value)}
+            placeholder="sk-proj-..."
+            style={{ fontFamily: 'monospace' }}
+          />
+        </div>
+        
+        <div className="flex justify-end mt-md">
+          <button className="btn btn-accent" onClick={handleSaveKey} style={{ padding: '8px 16px', fontSize: 'var(--font-xs)' }}>
+            <Save size={14} />
+            {keySaved ? 'Gespeichert!' : 'Key speichern'}
+          </button>
+        </div>
       </motion.div>
 
       {/* Danger Zone */}

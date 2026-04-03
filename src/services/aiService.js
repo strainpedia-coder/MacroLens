@@ -154,10 +154,102 @@ const MEAL_DATABASE = [
 ];
 
 /**
- * Simuliert die KI-Analyse eines Mahlzeiten-Fotos
- * Gibt nach künstlicher Verzögerung ein zufälliges Ergebnis zurück
+ * Konvertiert eine Datei für die OpenAI API in Base64
+ */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+/**
+ * Analysiert ein Mahlzeiten-Foto. Nutzt die OpenAI Vision API,
+ * falls ein Key hinterlegt ist, sonst den Mock-Fallback.
  */
 export async function analyzeMealPhoto(imageFile) {
+  const apiKey = localStorage.getItem('openai_api_key');
+  let imageUrl = null;
+  if (imageFile) {
+    imageUrl = URL.createObjectURL(imageFile);
+  }
+
+  // ==== ECHTE KI (OPENAI VISION) ====
+  if (apiKey && imageFile && imageFile.type && imageFile.type.startsWith('image/')) {
+    try {
+      const base64Image = await fileToBase64(imageFile);
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content: `Du bist ein professioneller Ernährungsberater, der Essen anhand von Bildern extrem präzise schätzt.
+Antworte AUSSCHLIESSLICH in diesem exakten JSON Format:
+{
+  "name": "Kurzer, passender Name des Gerichts (deutsch)",
+  "confidence": 0.95,
+  "calories": 450,
+  "protein": 30,
+  "carbs": 40,
+  "fat": 15,
+  "ingredients": [
+    { "name": "Zutat 1", "amount": "100g", "calories": 100, "protein": 5, "carbs": 10, "fat": 2 }
+  ]
+}
+Die Summe der Kalorien & Makros der Zutaten muss exakt zu den Gesamtwerten passen.`
+            },
+            {
+              role: "user",
+              content: [
+                { type: "text", text: "Analysiere die Mahlzeit auf diesem Bild." },
+                { type: "image_url", image_url: { url: base64Image, detail: "low" } }
+              ]
+            }
+          ],
+          max_tokens: 800
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const parsed = JSON.parse(data.choices[0].message.content);
+
+      // IDs hinzufügen
+      const processedIngredients = (parsed.ingredients || []).map(ing => ({
+        ...ing,
+        id: generateId()
+      }));
+
+      return {
+        id: generateId(),
+        ...parsed,
+        ingredients: processedIngredients,
+        imageUrl,
+        timestamp: new Date().toISOString(),
+        isAiGenerated: true
+      };
+
+    } catch (err) {
+      console.error('OpenAI Fehler, nutze Fallback:', err);
+      // Wenn OpenAI fehlschlägt, machen wir im Fallback weiter
+    }
+  }
+
+  // ==== FALLBACK (MOCK DATEN) ====
+  
   // Simulierte Verarbeitungszeit (1.5-3 Sekunden)
   const delay = 1500 + Math.random() * 1500;
   await new Promise(resolve => setTimeout(resolve, delay));
@@ -185,12 +277,6 @@ export async function analyzeMealPhoto(imageFile) {
     carbs: vary(ing.carbs || 0),
     fat: vary(ing.fat || 0)
   }));
-
-  // Image URL erstellen wenn Datei vorhanden
-  let imageUrl = null;
-  if (imageFile) {
-    imageUrl = URL.createObjectURL(imageFile);
-  }
 
   return {
     id: generateId(),
