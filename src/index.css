@@ -37,11 +37,11 @@
   --bg-elevated: #2a2650;
 
   /* Surface (Glassmorphism) */
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-hover: rgba(255, 255, 255, 0.07);
-  --surface-active: rgba(255, 255, 255, 0.10);
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-border-hover: rgba(255, 255, 255, 0.15);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-active: rgba(255, 255, 255, 0.08);
+  --surface-border: rgba(255, 255, 255, 0.05);
+  --surface-border-hover: rgba(255, 255, 255, 0.12);
 
   /* Text */
   --text-primary: #f8fafc;
@@ -59,15 +59,15 @@
   --space-3xl: 48px;
 
   /* Border Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
   --radius-full: 9999px;
 
   /* Typography */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-xs: 0.75rem;
   --font-sm: 0.8125rem;
   --font-base: 0.875rem;
@@ -78,9 +78,9 @@
   --font-3xl: 2.25rem;
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.4);
   --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.3);
   --shadow-glow-accent: 0 0 20px rgba(6, 182, 212, 0.3);
   --shadow-glow-calories: 0 0 20px rgba(16, 185, 129, 0.3);
@@ -119,7 +119,8 @@ html {
 
 body {
   font-family: var(--font-family);
-  background: var(--bg-primary);
+  background: linear-gradient(to bottom right, var(--bg-primary), #000);
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100dvh;
@@ -131,7 +132,21 @@ body {
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
-  background: var(--bg-primary);
+  background: transparent;
+}
+#root::before {
+  content: '';
+  position: absolute;
+  top: -20vh;
+  left: -20vw;
+  width: 140vw;
+  height: 140vh;
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  position: fixed;
 }
 
 img {
@@ -207,12 +222,17 @@ ul, ol {
 /* --- Glass Card --- */
 .card {
   background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   transition: all var(--transition-base);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.card:active {
+  transform: scale(0.98);
 }
 
 .card:hover {
@@ -221,11 +241,17 @@ ul, ol {
 
 .card-sm {
   background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--surface-border);
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-sm:active {
+  transform: scale(0.98);
 }
 
 /* --- Buttons --- */
