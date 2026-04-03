@@ -1,19 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, ScanBarcode, Loader } from 'lucide-react';
+import { X, ScanBarcode, Loader, FileText } from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useMeals } from '../store/MealContext';
 import { generateId, getTodayString, getMealType } from '../utils/calculations';
 import './BarcodeScanner.css';
-
-// Einfache EAN-zu-Produkt Lookup (Demo – in Produktion durch API ersetzen wie OpenFoodFacts)
-const BARCODE_DB = {
-  '4017100024405': { name: 'Haribo Goldbären', calories: 343, protein: 7, carbs: 77, fat: 0.5, serving: '100g' },
-  '4000521005009': { name: 'Milka Alpenmilch', calories: 530, protein: 6, carbs: 59, fat: 30, serving: '100g' },
-  '7622210449283': { name: 'Oreo Original', calories: 480, protein: 4, carbs: 69, fat: 20, serving: '44g (6 Stk)' },
-  '5000112628548': { name: 'Coca-Cola 330ml', calories: 42, protein: 0, carbs: 11, fat: 0, serving: '330ml' },
-  '4001686301531': { name: 'Ritter Sport Nuss', calories: 567, protein: 9, carbs: 48, fat: 38, serving: '100g' },
-};
 
 export default function BarcodeScanner({ onClose }) {
   const navigate = useNavigate();
@@ -21,8 +13,10 @@ export default function BarcodeScanner({ onClose }) {
   const scannerRef = useRef(null);
   const html5QrRef = useRef(null);
   const [scanning, setScanning] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [amount, setAmount] = useState(100);
 
   useEffect(() => {
     startScanner();
@@ -62,34 +56,63 @@ export default function BarcodeScanner({ onClose }) {
     setScanning(false);
   }
 
-  function handleScanResult(barcode) {
-    const product = BARCODE_DB[barcode];
-    if (product) {
-      setResult({ barcode, ...product });
-    } else {
-      // Nicht gefunden – an OpenFoodFacts weiterleiten (Demo)
-      setResult({
-        barcode,
-        name: `Produkt (${barcode})`,
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        serving: 'Unbekannt',
-        notFound: true
-      });
+  async function handleScanResult(barcode) {
+    stopScanner();
+    setLoading(true);
+    setError(null);
+    
+    // Haptic Feedback for success scan
+    try {
+      await Haptics.impact({ style: ImpactStyle.Heavy });
+    } catch(e) {} // Ignore on pure web
+    
+    try {
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const json = await response.json();
+
+      if (json.status === 1 && json.product) {
+        const p = json.product;
+        const nutris = p.nutriments || {};
+        
+        setResult({
+          barcode,
+          name: p.product_name_de || p.product_name || `Produkt (${barcode})`,
+          baseCalories: Math.round(nutris['energy-kcal_100g'] || 0),
+          baseProtein: Math.round(nutris.proteins_100g || 0),
+          baseCarbs: Math.round(nutris.carbohydrates_100g || 0),
+          baseFat: Math.round(nutris.fat_100g || 0),
+        });
+        setAmount(100);
+      } else {
+        setResult({
+          barcode,
+          name: `Unbekannt (${barcode})`,
+          baseCalories: 0, baseProtein: 0, baseCarbs: 0, baseFat: 0,
+          notFound: true
+        });
+      }
+    } catch (err) {
+      setError('Fehler beim Abrufen der Produktdaten aus OpenFoodFacts.');
+    } finally {
+      setLoading(false);
     }
   }
 
+  // Scaled macros helper
+  const scaledCalories = result ? Math.round(result.baseCalories * (amount / 100)) : 0;
+  const scaledProtein = result ? Math.round(result.baseProtein * (amount / 100)) : 0;
+  const scaledCarbs = result ? Math.round(result.baseCarbs * (amount / 100)) : 0;
+  const scaledFat = result ? Math.round(result.baseFat * (amount / 100)) : 0;
+
   function handleAddProduct() {
-    if (!result) return;
+    if (!result || result.notFound) return;
     const meal = {
       id: generateId(),
       name: result.name,
-      calories: result.calories,
-      protein: result.protein,
-      carbs: result.carbs,
-      fat: result.fat,
+      calories: scaledCalories,
+      protein: scaledProtein,
+      carbs: scaledCarbs,
+      fat: scaledFat,
       date: getTodayString(),
       timestamp: new Date().toISOString(),
       mealType: getMealType(new Date()),
@@ -98,11 +121,11 @@ export default function BarcodeScanner({ onClose }) {
       ingredients: [{
         id: generateId(),
         name: result.name,
-        amount: result.serving,
-        calories: result.calories,
-        protein: result.protein,
-        carbs: result.carbs,
-        fat: result.fat
+        amount: `${amount}g`,
+        calories: scaledCalories,
+        protein: scaledProtein,
+        carbs: scaledCarbs,
+        fat: scaledFat
       }]
     };
     dispatch({ type: 'ADD_MEAL', payload: meal });
@@ -138,8 +161,16 @@ export default function BarcodeScanner({ onClose }) {
         </div>
       )}
 
+      {/* Loading */}
+      {loading && (
+        <div className="barcode-scanner__error">
+          <Loader size={36} className="spin text-accent" />
+          <p>Produktdaten werden verarbeitet...</p>
+        </div>
+      )}
+
       {/* Error */}
-      {error && (
+      {error && !loading && (
         <div className="barcode-scanner__error">
           <p>{error}</p>
           <button className="btn btn-ghost" onClick={handleRetry}>Erneut versuchen</button>
@@ -157,22 +188,35 @@ export default function BarcodeScanner({ onClose }) {
               <p className="barcode-result__notfound">Produkt nicht in der Datenbank gefunden. Du kannst es manuell eingeben.</p>
             ) : (
               <>
-                <p className="barcode-result__serving">{result.serving}</p>
+                <div style={{ marginTop: 'var(--space-md)' }}>
+                  <label htmlFor="amount" className="input-label" style={{ textAlign: 'left' }}>Menge in Gramm (g)</label>
+                  <input 
+                    type="number" 
+                    id="amount"
+                    className="input-field" 
+                    style={{ textAlign: 'center', fontSize: 'var(--font-xl)', fontWeight: 'bold' }}
+                    value={amount} 
+                    onChange={e => setAmount(Number(e.target.value) || 0)} 
+                    min="1"
+                  />
+                  <p className="barcode-result__serving">Basierend auf 100g Tabelle</p>
+                </div>
+
                 <div className="barcode-result__macros">
                   <div className="barcode-macro barcode-macro--cal">
-                    <span className="barcode-macro__val">{result.calories}</span>
+                    <span className="barcode-macro__val">{scaledCalories}</span>
                     <span className="barcode-macro__label">kcal</span>
                   </div>
                   <div className="barcode-macro barcode-macro--p">
-                    <span className="barcode-macro__val">{result.protein}g</span>
+                    <span className="barcode-macro__val">{scaledProtein}g</span>
                     <span className="barcode-macro__label">Protein</span>
                   </div>
                   <div className="barcode-macro barcode-macro--c">
-                    <span className="barcode-macro__val">{result.carbs}g</span>
+                    <span className="barcode-macro__val">{scaledCarbs}g</span>
                     <span className="barcode-macro__label">Carbs</span>
                   </div>
                   <div className="barcode-macro barcode-macro--f">
-                    <span className="barcode-macro__val">{result.fat}g</span>
+                    <span className="barcode-macro__val">{scaledFat}g</span>
                     <span className="barcode-macro__label">Fett</span>
                   </div>
                 </div>

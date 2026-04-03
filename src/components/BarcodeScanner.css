@@ -44,6 +44,28 @@
   max-width: 400px;
   border-radius: var(--radius-xl);
   overflow: hidden;
+  position: relative;
+}
+
+.barcode-scanner__reader::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent-400);
+  box-shadow: 0 0 12px 4px rgba(6, 182, 212, 0.6);
+  z-index: 10;
+  animation: scanLaser 2.5s infinite ease-in-out alternate;
+  pointer-events: none;
+}
+
+@keyframes scanLaser {
+  0% { top: 5%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 95%; opacity: 0; }
 }
 
 .barcode-scanner__reader video {
