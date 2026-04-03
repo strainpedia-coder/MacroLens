@@ -33,29 +33,26 @@
 /* Date Chips */
 .history-dates {
   display: flex;
-  gap: var(--space-sm);
-  overflow-x: auto;
+  gap: var(--space-xs); /* kleinerer Gap für mehr Platz */
+  justify-content: space-between; /* Alle auf eine Breite verteilen */
   padding: var(--space-xs) 0;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.history-dates::-webkit-scrollbar {
-  display: none;
+  width: 100%;
 }
 
 .date-chip {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: var(--space-sm) var(--space-md);
-  min-width: 52px;
-  border-radius: var(--radius-lg);
+  padding: var(--space-sm) 0;
+  border-radius: var(--radius-md);
   background: var(--surface);
   border: 1.5px solid var(--surface-border);
   transition: all var(--transition-base);
   position: relative;
+  text-align: center;
 }
 
 .date-chip--selected {
