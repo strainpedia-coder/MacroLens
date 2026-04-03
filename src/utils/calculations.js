@@ -73,15 +73,22 @@ export function macrosToCalories(protein, carbs, fat) {
 }
 
 /**
- * Summiert Makros über mehrere Mahlzeiten
+ * Summiert Makros über mehrere Mahlzeiten und rundet sie sauber ab
  */
 export function sumMealMacros(meals) {
-  return meals.reduce((totals, meal) => ({
+  const sum = meals.reduce((totals, meal) => ({
     calories: totals.calories + (meal.calories || 0),
     protein: totals.protein + (meal.protein || 0),
     carbs: totals.carbs + (meal.carbs || 0),
     fat: totals.fat + (meal.fat || 0)
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+  return {
+    calories: Math.round(sum.calories),
+    protein: Math.round(sum.protein * 10) / 10,
+    carbs: Math.round(sum.carbs * 10) / 10,
+    fat: Math.round(sum.fat * 10) / 10
+  };
 }
 
 /**
