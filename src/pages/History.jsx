@@ -17,17 +17,30 @@ export default function History() {
   const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [activeTab, setActiveTab] = useState('calendar'); // 'calendar', 'stats', 'favorites'
+  const [weekOffset, setWeekOffset] = useState(0);
 
-  // Letzte 30 Tage
+  // Generiere Montag bis Sonntag für die gewählte Woche
+  // Immer Montag bis Sonntag der ausgewählten Woche
   const days = useMemo(() => {
     const result = [];
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+    const today = new Date();
+    // JavaScript getDay() = 0 (So) bis 6 (Sa). Wir wollen Montag(0) bis Sonntag(6)
+    const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    
+    // Den Montag der aktuell gewählten Woche berechnen
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - dayOfWeek + (weekOffset * 7));
+    
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
       result.push(d.toISOString().split('T')[0]);
     }
     return result;
-  }, []);
+  }, [weekOffset]);
+
+  // Wenn man den Tab wechselt, setze Datum zurück
+  const isCurrentWeek = weekOffset === 0;
 
   const filteredMeals = useMemo(() => {
     if (activeTab === 'favorites') return meals.filter(m => m.isFavorite);
@@ -69,30 +82,44 @@ export default function History() {
         </button>
       </div>
 
-      {/* Date Selector */}
+      {/* Date Selector (Wochenansicht) */}
       {activeTab === 'calendar' && (
         <motion.div 
-          className="history-dates mb-lg"
+          className="history-week-container mb-lg"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {days.map(day => {
-            const d = new Date(day);
-            const isToday = day === new Date().toISOString().split('T')[0];
-            const isSelected = day === selectedDate;
-            const dayMeals = meals.filter(m => m.date === day);
-            return (
-              <button
-                key={day}
-                className={`date-chip ${isSelected ? 'date-chip--selected' : ''}`}
-                onClick={() => setSelectedDate(day)}
-              >
-                <span className="date-chip__day">{isToday ? 'Heute' : d.toLocaleDateString('de-DE', { weekday: 'short' })}</span>
-                <span className="date-chip__num">{d.getDate()}</span>
-                {dayMeals.length > 0 && <div className="date-chip__dot" />}
-              </button>
-            );
-          })}
+          <div className="history-week-header mb-sm flex justify-between items-center px-sm">
+            <button className="btn btn-ghost btn-sm" onClick={() => setWeekOffset(w => w - 1)}>
+              <ChevronLeft size={20} />
+            </button>
+            <span className="text-secondary font-medium text-sm">
+              {isCurrentWeek ? 'Diese Woche' : `${days[0].split('-').reverse().join('.').slice(0, 5)} - ${days[6].split('-').reverse().join('.').slice(0, 5)}`}
+            </span>
+            <button className="btn btn-ghost btn-sm" onClick={() => setWeekOffset(w => w + 1)} disabled={isCurrentWeek}>
+              <ChevronRight size={20} />
+            </button>
+          </div>
+
+          <div className="history-dates">
+            {days.map(day => {
+              const d = new Date(day);
+              const isToday = day === new Date().toISOString().split('T')[0];
+              const isSelected = day === selectedDate;
+              const dayMeals = meals.filter(m => m.date === day);
+              return (
+                <button
+                  key={day}
+                  className={`date-chip ${isSelected ? 'date-chip--selected' : ''}`}
+                  onClick={() => setSelectedDate(day)}
+                >
+                  <span className="date-chip__day">{isToday ? 'Heute' : d.toLocaleDateString('de-DE', { weekday: 'short' })}</span>
+                  <span className="date-chip__num">{d.getDate()}</span>
+                  {dayMeals.length > 0 && <div className="date-chip__dot" />}
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
       )}
 
