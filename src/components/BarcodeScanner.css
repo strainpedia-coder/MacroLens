@@ -1,0 +1,157 @@
+.barcode-scanner {
+  min-height: 100dvh;
+  background: var(--bg-primary);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.barcode-scanner__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  margin-bottom: var(--space-lg);
+}
+
+.barcode-scanner__header h2 {
+  flex: 1;
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+
+.barcode-scanner__close {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scanner View */
+.barcode-scanner__view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.barcode-scanner__reader {
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.barcode-scanner__reader video {
+  border-radius: var(--radius-xl);
+}
+
+.barcode-scanner__hint {
+  text-align: center;
+}
+
+.barcode-scanner__hint p {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* Error */
+.barcode-scanner__error {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Result */
+.barcode-scanner__result {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.barcode-result-card {
+  text-align: center;
+}
+
+.barcode-result__barcode {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-family: monospace;
+}
+
+.barcode-result__name {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  margin-top: var(--space-md);
+}
+
+.barcode-result__serving {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.barcode-result__notfound {
+  color: var(--carbs);
+  font-size: var(--font-sm);
+  margin-top: var(--space-md);
+}
+
+.barcode-result__macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.barcode-macro {
+  text-align: center;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.barcode-macro--cal { background: var(--calories-bg); }
+.barcode-macro--p { background: var(--protein-bg); }
+.barcode-macro--c { background: var(--carbs-bg); }
+.barcode-macro--f { background: var(--fat-bg); }
+
+.barcode-macro__val {
+  font-size: var(--font-lg);
+  font-weight: 800;
+  display: block;
+}
+
+.barcode-macro__label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.barcode-result__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* html5-qrcode overrides */
+#barcode-reader {
+  border: none !important;
+}
+
+#barcode-reader > div {
+  border-radius: var(--radius-lg) !important;
+}
+
+#barcode-reader img[alt="Info icon"], 
+#barcode-reader a[href] {
+  display: none !important;
+}

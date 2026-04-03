@@ -1,0 +1,149 @@
+.home__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) 0;
+}
+
+.home__greeting {
+  font-size: var(--font-2xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.home__date {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.home__streak {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--calories-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ring Section */
+.home__ring-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.home__ring-wrapper {
+  padding: var(--space-lg) 0;
+}
+
+.home__message {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.home__cal-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  width: 100%;
+  justify-content: center;
+}
+
+.cal-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.cal-stat__value {
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+
+.cal-stat__label {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+
+.cal-stat__divider {
+  width: 1px;
+  height: 32px;
+  background: var(--surface-border);
+}
+
+/* Macros */
+.home__macros {
+  margin-bottom: var(--space-lg);
+}
+
+.home__macro-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Meals */
+.home__meals {
+  margin-bottom: var(--space-3xl);
+}
+
+.home__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
+
+.home__meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.meal-group__title {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-sm);
+}
+
+/* Scan FAB */
+.scan-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-lg));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-2xl);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-500));
+  color: white;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: var(--font-md);
+  z-index: var(--z-fab);
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+  position: fixed;
+}
+
+.scan-fab__glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.3), transparent 70%);
+  animation: ringPulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}

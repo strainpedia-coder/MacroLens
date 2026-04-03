@@ -1,0 +1,6 @@
+{
+  "appId": "com.macrolens.app",
+  "appName": "MacroLens",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

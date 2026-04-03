@@ -1,0 +1,209 @@
+.scan-page {
+  padding-bottom: var(--space-2xl);
+}
+
+/* Upload Area */
+.scan-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.scan-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  background: var(--surface);
+  border: 2px dashed var(--surface-border);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+}
+
+.scan-option:hover {
+  border-color: var(--accent-500);
+  background: var(--surface-hover);
+}
+
+.scan-option__input {
+  display: none;
+}
+
+.scan-option__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.3);
+}
+
+.scan-option__icon--secondary {
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.3);
+}
+
+.scan-option__icon--search {
+  background: linear-gradient(135deg, var(--calories), #34d399);
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.3);
+}
+
+.scan-option--search {
+  cursor: pointer;
+}
+
+.scan-option__icon--barcode {
+  background: linear-gradient(135deg, #f59e0b, #fb923c);
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.3);
+}
+
+.scan-option--barcode {
+  cursor: pointer;
+}
+
+.scan-option__label {
+  font-size: var(--font-md);
+  font-weight: 700;
+}
+
+.scan-option__desc {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+
+.scan-hint {
+  padding: var(--space-lg);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.scan-hint p {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* Preview */
+.scan-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.scan-preview__image-wrap {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: var(--bg-tertiary);
+}
+
+.scan-preview__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scan-preview__clear {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+}
+
+.scan-preview__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.scan-preview__scan-icon {
+  color: rgba(255, 255, 255, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Analyzing */
+.scan-analyzing {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 13, 26, 0.95);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.scan-analyzing__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+}
+
+.scan-analyzing__spinner {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-400);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.scan-analyzing__content h3 {
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+
+.scan-analyzing__content p {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.scan-analyzing__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.analyzing-step {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.analyzing-step--done {
+  color: var(--calories);
+}

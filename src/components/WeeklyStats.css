@@ -1,0 +1,123 @@
+.text-accent {
+  color: var(--accent-400);
+}
+
+.weekly-stats__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.weekly-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-xs);
+  font-weight: 600;
+}
+
+/* Chart */
+.weekly-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  height: 140px;
+  padding: var(--space-lg) 0;
+  position: relative;
+}
+
+.weekly-chart__goal-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px dashed rgba(16, 185, 129, 0.4);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.weekly-chart__goal-label {
+  position: absolute;
+  right: 0;
+  top: -14px;
+  font-size: 9px;
+  color: var(--calories);
+  font-weight: 600;
+}
+
+.weekly-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.weekly-bar-wrap {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.weekly-bar {
+  width: 70%;
+  max-width: 28px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: linear-gradient(180deg, var(--primary-500), var(--primary-700));
+  min-height: 2px;
+}
+
+.weekly-bar--today {
+  background: linear-gradient(180deg, var(--accent-400), var(--accent-600));
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+}
+
+.weekly-bar--over {
+  background: linear-gradient(180deg, var(--fat), #fb7185);
+}
+
+.weekly-bar__label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.weekly-bar__label--today {
+  color: var(--accent-400);
+  font-weight: 700;
+}
+
+/* Averages */
+.weekly-averages {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--surface-border);
+}
+
+.weekly-averages__title {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+.weekly-averages__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.weekly-avg__value {
+  font-size: var(--font-md);
+  font-weight: 700;
+  display: block;
+}
+
+.weekly-avg__label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
