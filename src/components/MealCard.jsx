@@ -9,11 +9,7 @@ export default function MealCard({ meal, onToggleFavorite, onDelete, onClick }) 
   return (
     <div className="meal-card card-sm" onClick={onClick} id={`meal-${meal.id}`}>
       <div className="meal-card__main">
-        {meal.imageUrl && (
-          <div className="meal-card__image">
-            <img src={meal.imageUrl} alt={meal.name} />
-          </div>
-        )}
+
         <div className="meal-card__info">
           <div className="meal-card__header">
             <h3 className="meal-card__name">{meal.name}</h3>
